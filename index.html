@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Baby Fetalver - Gender Reveal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <style>
+        :root {
+            --boy-color: #4facfe;
+            --boy-color-dark: #00f2fe;
+            --girl-color: #ff0844;
+            --girl-color-dark: #ffb199;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f8fafc; /* Neutral background */
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            color: #334155;
+            /* Removed 'perspective: 1000px;' to fix fixed-modal positioning */
+        }
+
+        .script-font {
+            font-family: 'Dancing Script', cursive;
+        }
+
+        /* Premium Glassmorphism */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 
+                0 25px 50px -12px rgba(0,0,0,0.08),
+                inset 0 1px 0 rgba(255, 255, 255, 1); /* Crystal top edge */
+            border-radius: 2.5rem;
+            transform-style: preserve-3d;
+        }
+
+        .glass-pill {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.8);
+        }
+
+        /* Gradients */
+        .text-gradient {
+            background: linear-gradient(135deg, var(--boy-color), #a855f7, var(--girl-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-size: 200% 200%;
+            animation: gradientShift 8s ease infinite;
+        }
+
+        .boy-gradient {
+            background: linear-gradient(135deg, var(--boy-color) 0%, var(--boy-color-dark) 100%);
+        }
+        
+        .girl-gradient {
+            background: linear-gradient(135deg, var(--girl-color-dark) 0%, var(--girl-color) 100%);
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Ambient Background Animations */
+        @keyframes float-slow {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(30px, -50px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
+        }
+
+        @keyframes float-slower {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(-30px, 50px) scale(0.9); }
+            66% { transform: translate(20px, -20px) scale(1.1); }
+        }
+
+        .ambient-blob-1 { animation: float-slow 15s ease-in-out infinite; }
+        .ambient-blob-2 { animation: float-slower 18s ease-in-out infinite reverse; }
+
+        /* Magic Dust Particles */
+        .magic-dust {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            pointer-events: none;
+            opacity: 0;
+            animation: float-up-fade var(--duration, 8s) ease-in-out infinite;
+            animation-delay: var(--delay, 0s);
+            box-shadow: 0 0 10px 2px rgba(255,255,255,0.4);
+        }
+
+        @keyframes float-up-fade {
+            0% { transform: translateY(0) scale(0); opacity: 0; }
+            20% { opacity: var(--max-opacity, 0.6); scale: 1; }
+            80% { opacity: var(--max-opacity, 0.6); }
+            100% { transform: translateY(-100px) scale(0); opacity: 0; }
+        }
+
+        /* Grand Entrance Animations */
+        .fade-in-up {
+            animation: fadeInUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            opacity: 0;
+            transform: translateY(40px) scale(0.98);
+        }
+
+        @keyframes fadeInUp {
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .delay-100 { animation-delay: 0.1s; }
+        .delay-200 { animation-delay: 0.3s; }
+        .delay-300 { animation-delay: 0.5s; }
+        .delay-400 { animation-delay: 0.7s; }
+        .delay-500 { animation-delay: 0.9s; }
+
+        /* 3D Tilt Element transition reset */
+        .tilt-card {
+            transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.4s ease;
+            will-change: transform;
+        }
+
+        /* Interactive Elements */
+        .vote-btn-boy:hover { box-shadow: 0 30px 60px -15px rgba(79, 172, 254, 0.5), inset 0 1px 0 rgba(255,255,255,0.9); }
+        .vote-btn-girl:hover { box-shadow: 0 30px 60px -15px rgba(255, 8, 68, 0.4), inset 0 1px 0 rgba(255,255,255,0.9); }
+
+        /* Voting Bar */
+        .vote-bar-wrapper {
+            background: rgba(226, 232, 240, 0.6);
+            backdrop-filter: blur(4px);
+            border-radius: 9999px;
+            padding: 4px;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .vote-bar-container {
+            width: 100%;
+            height: 32px;
+            border-radius: 9999px;
+            overflow: hidden;
+            display: flex;
+            position: relative;
+        }
+
+        .vote-boy, .vote-girl {
+            height: 100%;
+            transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            color: white;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .vote-boy {
+            background: linear-gradient(90deg, #4facfe, #00f2fe);
+            padding-left: 14px;
+        }
+
+        .vote-girl {
+            background: linear-gradient(90deg, #ffb199, #ff0844);
+            justify-content: flex-end;
+            padding-right: 14px;
+        }
+
+        /* Shine effect on bars */
+        .vote-boy::after, .vote-girl::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 50%;
+            background: linear-gradient(to bottom, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 100%);
+            pointer-events: none;
+        }
+
+        /* Dynamic Shimmer */
+        @keyframes shimmer {
+            0% { transform: translateX(-150%) skewX(-20deg); }
+            100% { transform: translateX(200%) skewX(-20deg); }
+        }
+        .vote-boy::before, .vote-girl::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            animation: shimmer 2s infinite;
+            z-index: 1;
+        }
+
+        .vs-badge {
+            position: absolute;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 40px;
+            height: 40px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 14px;
+            color: #334155;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.2), inset 0 2px 4px rgba(255,255,255,0.8);
+            z-index: 20;
+            transition: left 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 2px solid #f8fafc;
+        }
+
+        @keyframes error-shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-6px); }
+            40%, 80% { transform: translateX(6px); }
+        }
+        .error-shake { animation: error-shake 0.4s cubic-bezier(.36,.07,.19,.97) both; }
+
+        /* Ticker Animation */
+        @keyframes ticker {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); } /* Scrolls half since we duplicate content */
+        }
+        
+        .ticker-wrapper {
+            width: 100%;
+            overflow: hidden;
+            display: flex;
+            white-space: nowrap;
+            padding: 0.5rem 0;
+        }
+        
+        .ticker-track {
+            display: flex;
+            animation: ticker 35s linear infinite;
+            gap: 1.5rem;
+            width: max-content;
+        }
+        
+        .ticker-track:hover {
+            animation-play-state: paused;
+        }
+        
+        /* Reveal Text Gradients */
+        .boy-gradient-text {
+            background: linear-gradient(135deg, var(--boy-color), var(--boy-color-dark));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .girl-gradient-text {
+            background: linear-gradient(135deg, var(--girl-color), var(--girl-color-dark));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* NEW: Suspense & Reveal Animations */
+        @keyframes heart-beat-slow {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+        @keyframes heart-beat-fast {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.5); }
+        }
+        @keyframes pop-bounce {
+            0% { transform: scale(0.3); opacity: 0; }
+            60% { transform: scale(1.15); opacity: 1; }
+            80% { transform: scale(0.95); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .animate-pop-bounce {
+            animation: pop-bounce 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        /* Custom Scrollbar for Winners List */
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 10px; }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex flex-col items-center relative selection:bg-purple-200 selection:text-purple-900">
+
+    <!-- Grand Reveal Overlay -->
+    <div id="reveal-overlay" class="fixed top-0 left-0 w-full h-[100dvh] z-[300] hidden bg-white/90 backdrop-blur-2xl transition-all duration-1000 opacity-0 transition-colors">
+        
+        <!-- Stage 1 & 2: Suspense Build-up -->
+        <div id="suspense-container" class="absolute inset-0 flex flex-col items-center justify-center opacity-0 transition-opacity duration-500 hidden">
+            <h2 id="ready-text" class="text-3xl md:text-5xl font-bold text-slate-500 tracking-widest uppercase mb-8 drop-shadow-sm transition-colors duration-300">Get Ready...</h2>
+            <div id="beating-heart" class="text-8xl md:text-[10rem] filter drop-shadow-xl">🤍</div>
+        </div>
+
+        <!-- Stage 3: The Grand Reveal -->
+        <div class="absolute inset-0 flex flex-col items-center justify-center transform scale-50 opacity-0 transition-all duration-1000 ease-out hidden" id="reveal-content">
+            <h2 class="text-2xl md:text-5xl font-bold text-slate-500 tracking-widest uppercase mb-4 md:mb-6 drop-shadow-sm">And the baby is...</h2>
+            <h1 id="reveal-text" class="text-5xl sm:text-7xl md:text-9xl script-font drop-shadow-2xl leading-tight pb-4 text-center"></h1>
+            
+            <!-- Winners List Container -->
+            <div id="winners-container" class="mt-6 md:mt-8 w-full max-w-2xl px-4 opacity-0 transition-opacity duration-1000 hidden"></div>
+        </div>
+    </div>
+
+    <!-- Background Elements -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none z-0">
+        <!-- Magic Dust Container -->
+        <div id="magic-dust-container" class="absolute inset-0"></div>
+        
+        <!-- Glowing Orbs -->
+        <div class="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-blue-300/30 mix-blend-multiply filter blur-[100px] ambient-blob-1"></div>
+        <div class="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] rounded-full bg-pink-300/30 mix-blend-multiply filter blur-[120px] ambient-blob-2"></div>
+        <div class="absolute top-[40%] left-[30%] w-[30%] h-[30%] rounded-full bg-purple-200/20 mix-blend-multiply filter blur-[80px] ambient-blob-1" style="animation-delay: -5s;"></div>
+    </div>
+
+    <!-- Voting Modal -->
+    <div id="vote-modal" class="fixed inset-0 z-[200] hidden items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm transition-opacity duration-300">
+        <div id="modal-content" class="glass-card w-full max-w-md p-8 transform scale-95 opacity-0 transition-all duration-300 shadow-2xl">
+            <h3 id="modal-team-title" class="text-4xl script-font mb-2 text-center">Team!</h3>
+            <p class="text-slate-500 text-center text-sm mb-6 font-medium">Leave a little note for the parents-to-be!</p>
+            
+            <div class="space-y-4 text-left">
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-1 pl-1">Your Name <span class="text-pink-500 font-bold">*</span></label>
+                    <input type="text" id="voter-name" placeholder="e.g. Aunt Sarah" class="w-full px-4 py-3 rounded-2xl border border-slate-200 bg-white/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-400/50 transition-all text-slate-700">
+                    <p id="name-error" class="text-xs text-pink-500 mt-1 ml-2 font-medium hidden transition-opacity">Please enter your name!</p>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-1 pl-1">Message <span class="text-slate-400 font-normal text-xs ml-1">(Optional, max 50 chars)</span></label>
+                    <textarea id="voter-message" rows="2" maxlength="50" placeholder="Yay!" class="w-full px-4 py-3 rounded-2xl border border-slate-200 bg-white/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-400/50 transition-all resize-none text-slate-700"></textarea>
+                </div>
+
+                <div class="pt-2">
+                    <label class="block text-sm font-semibold text-slate-700 mb-2 pl-1">RSVP</label>
+                    <div class="flex gap-3">
+                        <label class="flex-1 cursor-pointer">
+                            <input type="radio" name="rsvp" value="Count us in!" class="peer sr-only" checked>
+                            <div class="py-2.5 px-2 rounded-xl border-2 border-slate-200 bg-white/50 text-center text-sm text-slate-600 font-semibold peer-checked:border-purple-400 peer-checked:bg-purple-50 peer-checked:text-purple-700 transition-all">
+                                🎉 Count us in!
+                            </div>
+                        </label>
+                        <label class="flex-1 cursor-pointer">
+                            <input type="radio" name="rsvp" value="Can't go" class="peer sr-only">
+                            <div class="py-2.5 px-2 rounded-xl border-2 border-slate-200 bg-white/50 text-center text-sm text-slate-600 font-semibold peer-checked:border-slate-400 peer-checked:bg-slate-100 peer-checked:text-slate-700 transition-all">
+                                😔 Can't go
+                            </div>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-8 flex gap-3">
+                <button onclick="closeVoteModal()" class="flex-1 py-3 px-4 rounded-full font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 transition-colors">Cancel</button>
+                <button onclick="submitVote()" class="flex-1 py-3 px-4 rounded-full font-semibold text-white bg-slate-800 hover:bg-slate-900 shadow-lg shadow-slate-900/20 transform hover:-translate-y-0.5 transition-all">Cast Vote</button>
+            </div>
+        </div>
+    </div>
+
+    <header class="w-full relative pt-20 pb-8 px-4 text-center z-10 fade-in-up">
+        <div class="inline-block mb-4 px-5 py-2 rounded-full glass-pill shadow-sm">
+            <span class="text-[11px] uppercase tracking-[0.25em] text-slate-600 font-bold">You're Invited</span>
+        </div>
+        <h1 class="text-6xl md:text-8xl script-font mb-2 text-gradient drop-shadow-md pb-2">Gender Reveal</h1>
+        <p class="text-lg md:text-xl text-slate-500 font-medium mt-2 max-w-lg mx-auto leading-relaxed">We can't wait to share the biggest surprise of our lives with you!</p>
+    </header>
+
+    <main class="w-full max-w-4xl px-4 pb-24 relative z-10 flex-grow flex flex-col items-center">
+        
+        <!-- Countdown Timer -->
+        <div class="w-full max-w-2xl mx-auto mb-14 fade-in-up delay-100">
+            <div class="glass-card p-6 md:p-8 flex justify-center gap-4 md:gap-10 tilt-card">
+                <div class="flex flex-col items-center w-16 md:w-20 relative z-10">
+                    <span id="cd-days" class="text-4xl md:text-5xl font-black text-slate-800 drop-shadow-sm font-mono tracking-tight">00</span>
+                    <span class="text-[10px] md:text-xs uppercase tracking-[0.2em] text-slate-400 font-bold mt-2">Days</span>
+                </div>
+                <div class="text-3xl font-black text-slate-300 mt-1 opacity-50">:</div>
+                <div class="flex flex-col items-center w-16 md:w-20 relative z-10">
+                    <span id="cd-hours" class="text-4xl md:text-5xl font-black text-slate-800 drop-shadow-sm font-mono tracking-tight">00</span>
+                    <span class="text-[10px] md:text-xs uppercase tracking-[0.2em] text-slate-400 font-bold mt-2">Hrs</span>
+                </div>
+                <div class="text-3xl font-black text-slate-300 mt-1 opacity-50">:</div>
+                <div class="flex flex-col items-center w-16 md:w-20 relative z-10">
+                    <span id="cd-minutes" class="text-4xl md:text-5xl font-black text-slate-800 drop-shadow-sm font-mono tracking-tight">00</span>
+                    <span class="text-[10px] md:text-xs uppercase tracking-[0.2em] text-slate-400 font-bold mt-2">Min</span>
+                </div>
+                <div class="text-3xl font-black text-slate-300 mt-1 opacity-50">:</div>
+                <div class="flex flex-col items-center w-16 md:w-20 relative z-10">
+                    <span id="cd-seconds" class="text-4xl md:text-5xl font-black text-blue-500 drop-shadow-sm font-mono tracking-tight">00</span>
+                    <span class="text-[10px] md:text-xs uppercase tracking-[0.2em] text-slate-400 font-bold mt-2">Sec</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- The Big Question - Voting Cards -->
+        <div id="voting-section" class="w-full grid grid-cols-1 md:grid-cols-2 gap-8 fade-in-up delay-200">
+            <!-- Team Boy Side -->
+            <div class="vote-btn vote-btn-boy group cursor-pointer glass-card p-10 flex flex-col items-center justify-center relative overflow-hidden tilt-card" onclick="openVoteModal('boy')">
+                <div class="absolute inset-0 boy-gradient opacity-0 group-hover:opacity-5 transition-opacity duration-500"></div>
+                
+                <div class="w-28 h-28 rounded-full boy-gradient flex items-center justify-center mb-6 shadow-xl shadow-blue-200/50 transform group-hover:scale-110 group-hover:-translate-y-2 transition-all duration-500 z-10 border-4 border-white/50">
+                    <i data-lucide="baby" class="w-14 h-14 text-white"></i>
+                </div>
+                
+                <h3 class="text-5xl script-font text-blue-500 mb-4 z-10 drop-shadow-sm">Team Boy</h3>
+                <span class="px-6 py-2 rounded-full bg-white/80 text-blue-600 text-sm font-bold z-10 transition-all duration-300 group-hover:bg-blue-50 border border-blue-100 shadow-sm">Tap to vote</span>
+            </div>
+
+            <!-- Team Girl Side -->
+            <div class="vote-btn vote-btn-girl group cursor-pointer glass-card p-10 flex flex-col items-center justify-center relative overflow-hidden tilt-card" onclick="openVoteModal('girl')">
+                <div class="absolute inset-0 girl-gradient opacity-0 group-hover:opacity-5 transition-opacity duration-500"></div>
+                
+                <div class="w-28 h-28 rounded-full girl-gradient flex items-center justify-center mb-6 shadow-xl shadow-pink-200/50 transform group-hover:scale-110 group-hover:-translate-y-2 transition-all duration-500 z-10 border-4 border-white/50">
+                    <i data-lucide="heart" class="w-14 h-14 text-white fill-white/20"></i>
+                </div>
+                
+                <h3 class="text-5xl script-font text-pink-500 mb-4 z-10 drop-shadow-sm">Team Girl</h3>
+                <span class="px-6 py-2 rounded-full bg-white/80 text-pink-600 text-sm font-bold z-10 transition-all duration-300 group-hover:bg-pink-50 border border-pink-100 shadow-sm">Tap to vote</span>
+            </div>
+        </div>
+
+        <div class="w-full max-w-xl mt-16 fade-in-up delay-300 text-center glass-card p-8 md:p-10 relative overflow-hidden tilt-card">
+            <!-- Decorative background elements -->
+            <div class="absolute -top-20 -left-20 w-48 h-48 bg-blue-400/10 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="absolute -bottom-20 -right-20 w-48 h-48 bg-pink-400/10 rounded-full blur-3xl pointer-events-none"></div>
+            
+            <div class="flex items-center justify-between mb-10 relative z-10 px-2">
+                <div class="flex items-center gap-3 bg-white/60 px-4 py-2 rounded-full border border-white shadow-sm">
+                    <div class="relative flex h-3 w-3">
+                      <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                      <span class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+                    </div>
+                    <h4 class="text-xs uppercase tracking-widest font-bold text-slate-700">Live Poll</h4>
+                </div>
+                <div class="text-xs font-bold text-slate-500 bg-white/80 px-5 py-2 rounded-full shadow-sm border border-slate-100 backdrop-blur-md">
+                    <span id="total-votes-count" class="text-slate-800 text-base font-black">0</span> Votes
+                </div>
+            </div>
+            
+            <div class="vote-bar-wrapper p-2.5 bg-white/40 rounded-full relative z-10 border border-white/80">
+                <div class="vote-bar-container h-16 shadow-inner rounded-full bg-slate-100/50 relative">
+                    <div id="boy-bar" class="vote-boy text-2xl justify-start pl-6" style="width: 50%;">
+                        <span class="flex items-center gap-2 z-10 relative tracking-tight drop-shadow-md">👦 <span id="boy-count-text">0%</span></span>
+                    </div>
+                    <div id="vs-badge" class="vs-badge" style="left: 50%;">VS</div>
+                    <div id="girl-bar" class="vote-girl text-2xl justify-end pr-6" style="width: 50%;">
+                        <span class="flex items-center gap-2 z-10 relative tracking-tight drop-shadow-md"><span id="girl-count-text">0%</span> 👧</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex justify-between mt-8 px-6 text-sm font-bold relative z-10">
+                <div class="flex flex-col items-start group">
+                    <span class="text-[11px] uppercase tracking-widest text-blue-400 font-extrabold mb-1">Team Boy</span>
+                    <div class="flex items-baseline gap-1.5">
+                        <span id="boy-votes-detail" class="text-4xl text-slate-800 font-black drop-shadow-sm transition-all duration-500">0</span>
+                        <span class="text-slate-400 text-xs font-semibold uppercase tracking-wider">votes</span>
+                    </div>
+                </div>
+                <div class="flex flex-col items-end group">
+                    <span class="text-[11px] uppercase tracking-widest text-pink-400 font-extrabold mb-1">Team Girl</span>
+                    <div class="flex items-baseline gap-1.5">
+                        <span id="girl-votes-detail" class="text-4xl text-slate-800 font-black drop-shadow-sm transition-all duration-500">0</span>
+                        <span class="text-slate-400 text-xs font-semibold uppercase tracking-wider">votes</span>
+                    </div>
+                </div>
+            </div>
+            
+            <p id="vote-message" class="text-sm mt-4 h-5 transition-all duration-300 opacity-0 transform translate-y-2 font-semibold"></p>
+        </div>
+
+        <!-- Live Guestbook Ticker -->
+        <div class="w-full max-w-4xl glass-card mt-12 overflow-hidden py-4 fade-in-up delay-400 border border-white/80 relative shadow-md">
+            <div class="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-[rgba(255,255,255,0.7)] to-transparent z-10 pointer-events-none rounded-l-[2.5rem]"></div>
+            <div class="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-[rgba(255,255,255,0.7)] to-transparent z-10 pointer-events-none rounded-r-[2.5rem]"></div>
+            
+            <div class="ticker-wrapper">
+                <div id="ticker-track" class="ticker-track">
+                    <!-- Dynamic content loads here -->
+                </div>
+            </div>
+        </div>
+
+        <div class="w-full max-w-3xl glass-card mt-16 p-8 md:p-12 relative overflow-hidden fade-in-up delay-500 tilt-card">
+            
+            <div class="text-center mb-12">
+                <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-slate-100 text-slate-400 mb-4 shadow-inner border border-white">
+                    <i data-lucide="calendar-heart" class="w-8 h-8"></i>
+                </div>
+                <h3 class="text-3xl font-semibold text-slate-800 tracking-tight">The Details</h3>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
+                <!-- Date & Time -->
+                <div class="flex flex-col items-center text-center p-8 rounded-3xl bg-white/40 border border-white/80 shadow-sm hover:bg-white/60 transition-colors">
+                    <div class="p-4 bg-gradient-to-br from-blue-100 to-blue-50 rounded-2xl mb-4 text-blue-500 shadow-inner border border-blue-100">
+                        <i data-lucide="clock" class="w-8 h-8"></i>
+                    </div>
+                    <h4 class="font-bold text-2xl text-slate-800 mb-1">June 12, 2026</h4>
+                    <p class="text-slate-500 font-medium">Friday @ 3:00 PM</p>
+                </div>
+
+                <!-- Location -->
+                <a href="https://maps.app.goo.gl/JUovvR9MSPjw9TbeA" target="_blank" rel="noopener noreferrer" class="flex flex-col items-center text-center p-8 rounded-3xl bg-white/40 border border-white/80 shadow-sm hover:bg-white/70 transition-all cursor-pointer group">
+                    <div class="p-4 bg-gradient-to-br from-pink-100 to-pink-50 rounded-2xl mb-4 text-pink-500 shadow-inner border border-pink-100 group-hover:scale-110 transition-transform duration-300">
+                        <i data-lucide="map-pin" class="w-8 h-8"></i>
+                    </div>
+                    <h4 class="font-bold text-2xl text-slate-800 mb-1">Fetalver Residence</h4>
+                    <p class="text-slate-500 font-medium leading-tight">Brgy. Rizal<br>Odiongan, Romblon</p>
+                    <span class="text-xs text-blue-500 mt-4 font-bold uppercase tracking-widest flex items-center opacity-0 group-hover:opacity-100 transition-opacity"><i data-lucide="external-link" class="w-3 h-3 mr-1"></i> View Map</span>
+                </a>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="mt-12 flex flex-col sm:flex-row justify-center gap-5">
+                <a href="https://maps.app.goo.gl/JUovvR9MSPjw9TbeA" target="_blank" rel="noopener noreferrer" class="flex items-center justify-center px-8 py-4 bg-white/80 border border-white rounded-full text-slate-700 font-bold hover:bg-white shadow-sm hover:shadow-md transition-all">
+                    <i data-lucide="map" class="w-5 h-5 mr-2 text-slate-400"></i> Open in Maps
+                </a>
+                <button onclick="addToCalendar()" class="flex items-center justify-center px-8 py-4 bg-slate-800 text-white rounded-full font-bold hover:bg-slate-900 shadow-lg shadow-slate-900/20 transform hover:-translate-y-1 transition-all">
+                    <i data-lucide="calendar-plus" class="w-5 h-5 mr-2"></i> Save the Date
+                </button>
+            </div>
+        </div>
+
+        <div class="w-full max-w-3xl glass-card mt-12 p-8 md:p-12 relative overflow-hidden fade-in-up delay-500 tilt-card">
+            <div class="text-center mb-10">
+                <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-slate-100 text-slate-400 mb-4 shadow-inner border border-white">
+                    <i data-lucide="shirt" class="w-8 h-8"></i>
+                </div>
+                <h3 class="text-3xl font-semibold text-slate-800 tracking-tight">Dress Code</h3>
+                <p class="text-slate-500 mt-2 font-medium">Show up in the color of your guess!</p>
+            </div>
+
+            <div class="flex flex-col md:flex-row justify-center items-center gap-8 md:gap-16">
+                <!-- Boy Attire -->
+                <div class="flex flex-col items-center text-center flex-1 bg-white/40 border border-white/80 shadow-sm rounded-3xl p-8 w-full max-w-xs">
+                    <div class="w-24 h-24 bg-gradient-to-br from-blue-50 to-blue-100 rounded-3xl flex items-center justify-center mb-5 shadow-inner border border-blue-200/50 text-blue-500">
+                        <i data-lucide="shirt" class="w-12 h-12"></i>
+                    </div>
+                    <h4 class="font-bold text-xl text-slate-800 mb-3">Team Boy</h4>
+                    <span class="inline-block px-6 py-2 rounded-full boy-gradient text-white font-bold text-sm shadow-md shadow-blue-200">Wear Blue</span>
+                </div>
+
+                <div class="text-slate-300 font-black text-2xl md:rotate-0 rotate-90 opacity-50">OR</div>
+
+                <!-- Girl Attire -->
+                <div class="flex flex-col items-center text-center flex-1 bg-white/40 border border-white/80 shadow-sm rounded-3xl p-8 w-full max-w-xs">
+                    <div class="w-24 h-24 bg-gradient-to-br from-pink-50 to-pink-100 rounded-3xl flex items-center justify-center mb-5 shadow-inner border border-pink-200/50 text-pink-500">
+                        <i data-lucide="shirt" class="w-12 h-12"></i>
+                    </div>
+                    <h4 class="font-bold text-xl text-slate-800 mb-3">Team Girl</h4>
+                    <span class="inline-block px-6 py-2 rounded-full girl-gradient text-white font-bold text-sm shadow-md shadow-pink-200">Wear Pink</span>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // --- 3D Tilt Effect (Only on devices that support hover) ---
+        if (window.matchMedia("(hover: hover)").matches) {
+            document.querySelectorAll('.tilt-card').forEach(card => {
+                card.addEventListener('mousemove', e => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    
+                    // Calculate rotation (max 8 degrees for subtlety)
+                    const rotateX = ((y / rect.height) - 0.5) * -16; 
+                    const rotateY = ((x / rect.width) - 0.5) * 16;
+                    
+                    card.style.transition = 'none'; // Disable transition for instant tracking
+                    card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+                });
+
+                card.addEventListener('mouseleave', () => {
+                    card.style.transition = 'transform 0.5s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.5s ease';
+                    card.style.transform = `perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)`;
+                });
+            });
+        }
+
+        // --- Magic Dust Generator ---
+        function createMagicDust() {
+            const container = document.getElementById('magic-dust-container');
+            const numParticles = 40;
+            
+            for (let i = 0; i < numParticles; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('magic-dust');
+                
+                // Randomize properties
+                const size = Math.random() * 4 + 2; // 2px to 6px
+                const left = Math.random() * 100; // 0% to 100%
+                const top = Math.random() * 100; 
+                const duration = Math.random() * 6 + 6; // 6s to 12s
+                const delay = Math.random() * 5; // 0s to 5s
+                const maxOpacity = Math.random() * 0.5 + 0.2; // 0.2 to 0.7
+                
+                // Assign styles
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                particle.style.left = `${left}%`;
+                particle.style.top = `${top}%`;
+                particle.style.setProperty('--duration', `${duration}s`);
+                particle.style.setProperty('--delay', `${delay}s`);
+                particle.style.setProperty('--max-opacity', maxOpacity);
+                
+                container.appendChild(particle);
+            }
+        }
+        createMagicDust();
+
+        // --- GOOGLE SHEETS CONFIGURATION ---
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz-AkEVXouSke-FoB11g-kRTIFS9EpBckyDQYDSOPL82d5axLeZtOurFvgpYyF6c8fL/exec"; 
+
+        // State for voting
+        let votes = { boy: 0, girl: 0 };
+        let pendingVoteTeam = null;
+        let hasVoted = localStorage.getItem('genderRevealVoted') !== null;
+        let userVote = localStorage.getItem('genderRevealVoted');
+        let isRevealed = false;
+        
+        // NEW: Track optimistic updates for instant UI
+        let lastVoteTime = 0;
+        let optimisticMessage = null;
+        let lastServerMessages = [];
+        
+        // Track the voters for the Grand Reveal
+        let globalBoyVoters = [];
+        let globalGirlVoters = [];
+
+        function loadMockData() {
+            if(votes.boy === 0 && votes.girl === 0) {
+                votes = { boy: 24, girl: 21 };
+                if (hasVoted) votes[userVote]++;
+                updateVoteBar();
+                
+                globalBoyVoters = ["Aunt Sarah", "Uncle John", "Cousin Mike", "Grandpa T", "Dave"];
+                globalGirlVoters = ["Grandma K", "Cousin Mia", "Jessica", "Aunt Lily"];
+
+                updateTicker([
+                    { name: "Aunt Sarah", team: "boy", message: "Can't wait!" },
+                    { name: "Grandma K", team: "girl", message: "Little princess!" },
+                    { name: "Uncle John", team: "boy", message: "Team Boy!" },
+                    { name: "Cousin Mia", team: "girl", message: "Pink outfits! 💕" }
+                ]);
+                lastServerMessages = [
+                    { name: "Aunt Sarah", team: "boy", message: "Can't wait!" },
+                    { name: "Grandma K", team: "girl", message: "Little princess!" },
+                    { name: "Uncle John", team: "boy", message: "Team Boy!" },
+                    { name: "Cousin Mia", team: "girl", message: "Pink outfits! 💕" }
+                ];
+            }
+        }
+
+        async function fetchVotes() {
+            if (GOOGLE_SCRIPT_URL.includes("YOUR_WEB_APP_URL_HERE") || GOOGLE_SCRIPT_URL.trim() === "") {
+                loadMockData();
+                return;
+            }
+            try {
+                const response = await fetch(GOOGLE_SCRIPT_URL);
+                if (!response.ok) throw new Error("Network response was not ok");
+                
+                const data = await response.json();
+                if (data.boy !== undefined && data.girl !== undefined) {
+                    
+                    // SMART BUFFER: If they just voted (within 15 seconds), the Google Sheet might not have 
+                    // processed it yet. We temporarily add their local vote to the server's total to prevent the progress bar from "flickering" backwards.
+                    votes.boy = data.boy;
+                    votes.girl = data.girl;
+                    
+                    if (hasVoted && (Date.now() - lastVoteTime < 15000)) {
+                        votes[userVote]++;
+                    }
+                    
+                    // Update global voter lists
+                    if (data.boyVoters) globalBoyVoters = data.boyVoters;
+                    if (data.girlVoters) globalGirlVoters = data.girlVoters;
+
+                    updateVoteBar();
+                    
+                    if (data.messages && data.messages.length > 0) {
+                        lastServerMessages = data.messages;
+                        let displayMessages = [...data.messages];
+                        
+                        // Add their instant message to the ticker until the server catches up
+                        if (optimisticMessage && (Date.now() - lastVoteTime < 15000)) {
+                            displayMessages.push(optimisticMessage);
+                        }
+                        
+                        updateTicker(displayMessages);
+                    }
+
+                    // Check for the grand reveal from Cell F1!
+                    if (data.revealStatus && (data.revealStatus === 'BOY' || data.revealStatus === 'GIRL') && !isRevealed) {
+                        triggerReveal(data.revealStatus);
+                    }
+                }
+            } catch (error) {
+                console.warn("Could not fetch live data from Google Sheets (CORS or network error). Loading local mock data instead.", error);
+                loadMockData();
+            }
+        }
+
+        fetchVotes();
+        setInterval(fetchVotes, 10000);
+
+        function updateTicker(messages) {
+            const track = document.getElementById('ticker-track');
+            if(!messages || messages.length === 0 || !track) return;
+
+            let html = '';
+            messages.forEach(msg => {
+                const teamIcon = msg.team === 'boy' ? '👦' : '👧';
+                const teamColor = msg.team === 'boy' ? 'text-blue-500' : 'text-pink-500';
+                const bgColor = msg.team === 'boy' ? 'bg-blue-50/90 border-blue-100/80' : 'bg-pink-50/90 border-pink-100/80';
+                const iconBg = msg.team === 'boy' ? 'bg-blue-200/50 shadow-blue-200/50' : 'bg-pink-200/50 shadow-pink-200/50';
+                
+                const safeName = msg.name.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+                const safeMsg = msg.message.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+                
+                html += `
+                    <div class="flex-shrink-0 flex items-center gap-3 px-5 py-3 rounded-2xl ${bgColor} border backdrop-blur-md shadow-sm hover:-translate-y-1 hover:shadow-md transition-all duration-300 cursor-default group">
+                        <div class="w-10 h-10 rounded-full flex items-center justify-center text-xl ${iconBg} shadow-sm transform group-hover:rotate-12 transition-transform duration-300">
+                            ${teamIcon}
+                        </div>
+                        <div class="flex flex-col justify-center pr-2">
+                            <span class="text-[11px] font-black uppercase tracking-wider ${teamColor} leading-tight mb-0.5">${safeName}</span>
+                            <span class="text-sm font-bold text-slate-700 leading-tight">"${safeMsg}"</span>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            track.innerHTML = html + html + html; 
+        }
+
+        const targetDate = new Date("June 12, 2026 15:00:00").getTime();
+        
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const distance = targetDate - now;
+
+            if (distance < 0) {
+                document.getElementById("cd-days").textContent = "00";
+                document.getElementById("cd-hours").textContent = "00";
+                document.getElementById("cd-minutes").textContent = "00";
+                document.getElementById("cd-seconds").textContent = "00";
+                return;
+            }
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            document.getElementById("cd-days").textContent = days.toString().padStart(2, '0');
+            document.getElementById("cd-hours").textContent = hours.toString().padStart(2, '0');
+            document.getElementById("cd-minutes").textContent = minutes.toString().padStart(2, '0');
+            document.getElementById("cd-seconds").textContent = seconds.toString().padStart(2, '0');
+        }
+
+        setInterval(updateCountdown, 1000);
+        updateCountdown();
+
+        function updateVoteBar() {
+            const total = votes.boy + votes.girl;
+            const boyBar = document.getElementById('boy-bar');
+            const girlBar = document.getElementById('girl-bar');
+            const vsBadge = document.getElementById('vs-badge');
+            
+            document.getElementById('total-votes-count').textContent = total;
+            
+            // Animate numbers
+            animateValue("boy-votes-detail", parseInt(document.getElementById('boy-votes-detail').textContent), votes.boy, 1000);
+            animateValue("girl-votes-detail", parseInt(document.getElementById('girl-votes-detail').textContent), votes.girl, 1000);
+
+            if (total === 0) {
+                boyBar.style.width = '50%';
+                document.getElementById('boy-count-text').textContent = '0%';
+                girlBar.style.width = '50%';
+                document.getElementById('girl-count-text').textContent = '0%';
+                vsBadge.style.left = '50%';
+                return;
+            }
+
+            const boyPercent = Math.round((votes.boy / total) * 100);
+            const girlPercent = 100 - boyPercent; 
+
+            const minPercent = 20; 
+            let displayBoyPercent = Math.max(minPercent, Math.min(100 - minPercent, boyPercent));
+            let displayGirlPercent = 100 - displayBoyPercent;
+
+            boyBar.style.width = `${displayBoyPercent}%`;
+            document.getElementById('boy-count-text').textContent = `${boyPercent}%`;
+            
+            girlBar.style.width = `${displayGirlPercent}%`;
+            document.getElementById('girl-count-text').textContent = `${girlPercent}%`;
+            
+            vsBadge.style.left = `${displayBoyPercent}%`;
+            
+            if (votes.boy > votes.girl) {
+                boyBar.style.boxShadow = 'inset 0 0 20px rgba(255,255,255,0.6), 0 0 20px rgba(79, 172, 254, 0.8)';
+                girlBar.style.boxShadow = 'none';
+            } else if (votes.girl > votes.boy) {
+                girlBar.style.boxShadow = 'inset 0 0 20px rgba(255,255,255,0.6), 0 0 20px rgba(255, 8, 68, 0.8)';
+                boyBar.style.boxShadow = 'none';
+            } else {
+                boyBar.style.boxShadow = 'none';
+                girlBar.style.boxShadow = 'none';
+            }
+        }
+
+        function animateValue(id, start, end, duration) {
+            if (start === end) return;
+            const obj = document.getElementById(id);
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                // easeOutQuart
+                const easeProgress = 1 - Math.pow(1 - progress, 4);
+                obj.innerHTML = Math.floor(easeProgress * (end - start) + start);
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                } else {
+                    obj.innerHTML = end;
+                }
+            };
+            window.requestAnimationFrame(step);
+        }
+
+        function openVoteModal(team) {
+            if (hasVoted) {
+                showMessage("You've already cast your vote!", "text-amber-500");
+                return;
+            }
+            
+            // Lock the background from scrolling
+            document.body.style.overflow = 'hidden';
+            
+            pendingVoteTeam = team;
+            const modal = document.getElementById('vote-modal');
+            const modalTitle = document.getElementById('modal-team-title');
+            
+            modalTitle.textContent = `Team ${team.charAt(0).toUpperCase() + team.slice(1)}!`;
+            modalTitle.className = `text-4xl script-font mb-2 text-center ${team === 'boy' ? 'text-blue-500' : 'text-pink-500'}`;
+            
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            
+            setTimeout(() => {
+                document.getElementById('modal-content').classList.remove('scale-95', 'opacity-0');
+                document.getElementById('modal-content').classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+
+        function closeVoteModal() {
+            const modal = document.getElementById('vote-modal');
+            document.getElementById('modal-content').classList.remove('scale-100', 'opacity-100');
+            document.getElementById('modal-content').classList.add('scale-95', 'opacity-0');
+            
+            // Unlock background scrolling
+            document.body.style.overflow = '';
+            
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }, 300); // Wait for fade-out animation to finish before hiding
+        }
+
+        function submitVote() {
+            const nameInput = document.getElementById('voter-name');
+            const messageInput = document.getElementById('voter-message');
+            const nameError = document.getElementById('name-error');
+            const rsvpInput = document.querySelector('input[name="rsvp"]:checked');
+            
+            const name = nameInput.value.trim();
+            const message = messageInput.value.trim();
+            const rsvp = rsvpInput ? rsvpInput.value : '';
+            
+            if (!name) {
+                nameError.classList.remove('hidden');
+                const modalContent = document.getElementById('modal-content');
+                modalContent.classList.add('error-shake');
+                setTimeout(() => modalContent.classList.remove('error-shake'), 400);
+                nameInput.focus();
+                return;
+            }
+            
+            nameError.classList.add('hidden');
+            
+            // Optimistic UI Update - instant feedback
+            votes[pendingVoteTeam]++;
+            hasVoted = true;
+            userVote = pendingVoteTeam;
+            localStorage.setItem('genderRevealVoted', pendingVoteTeam);
+            lastVoteTime = Date.now();
+            
+            // Add optimistic name to the winners list instantly
+            if (pendingVoteTeam === 'boy' && !globalBoyVoters.includes(name)) globalBoyVoters.push(name);
+            if (pendingVoteTeam === 'girl' && !globalGirlVoters.includes(name)) globalGirlVoters.push(name);
+            
+            // Add optimistic message to ticker
+            if (message) {
+                optimisticMessage = { name: name, team: pendingVoteTeam, message: message };
+                let currentMessages = [...lastServerMessages];
+                currentMessages.push(optimisticMessage);
+                updateTicker(currentMessages);
+            }
+            
+            updateVoteBar();
+            closeVoteModal();
+            showMessage(`Go Team ${pendingVoteTeam.charAt(0).toUpperCase() + pendingVoteTeam.slice(1)}!`, pendingVoteTeam === 'boy' ? "text-blue-500" : "text-pink-500");
+            
+            // Background send to Google Sheets
+            if (GOOGLE_SCRIPT_URL.includes("YOUR_WEB_APP_URL_HERE") || GOOGLE_SCRIPT_URL.trim() === "") return;
+            const url = `${GOOGLE_SCRIPT_URL}?action=vote&team=${encodeURIComponent(pendingVoteTeam)}&name=${encodeURIComponent(name)}&message=${encodeURIComponent(message)}&rsvp=${encodeURIComponent(rsvp)}`;
+            fetch(url, { mode: 'no-cors' }).catch(e => console.warn("Vote synced offline."));
+        }
+
+        function showMessage(text, colorClass) {
+            const msgEl = document.getElementById('vote-message');
+            if (!msgEl) return;
+            msgEl.textContent = text;
+            msgEl.className = `text-sm mt-4 h-5 transition-all duration-300 transform font-bold ${colorClass} opacity-100 translate-y-0`;
+            
+            setTimeout(() => {
+                msgEl.classList.remove('opacity-100', 'translate-y-0');
+                msgEl.classList.add('opacity-0', 'translate-y-2');
+            }, 4000);
+        }
+
+        function addToCalendar() {
+            const eventDetails = {
+                title: 'Fetalver Gender Reveal',
+                description: 'Join us to find out if it is a boy or a girl!',
+                location: 'Fetalver Residence, Brgy. Rizal, Odiongan, Romblon',
+                start: '20260612T230000Z', 
+                end: '20260613T010000Z'
+            };
+
+            const icsContent = `BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//Gender Reveal Invite//EN\nBEGIN:VEVENT\nUID:${new Date().getTime()}@genderreveal\nDTSTAMP:${new Date().toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z'}\nDTSTART:${eventDetails.start}\nDTEND:${eventDetails.end}\nSUMMARY:${eventDetails.title}\nDESCRIPTION:${eventDetails.description}\nLOCATION:${eventDetails.location}\nEND:VEVENT\nEND:VCALENDAR`;
+
+            const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+            const link = document.createElement('a');
+            link.href = window.URL.createObjectURL(blob);
+            link.download = 'gender_reveal.ics';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // --- Grand Reveal Logic ---
+        function triggerReveal(gender) {
+            if (isRevealed) return; // Prevent multiple triggers
+            isRevealed = true;
+            
+            // Lock scrolling and instantly snap to top
+            window.scrollTo(0, 0); 
+            document.body.style.overflow = 'hidden';
+
+            const overlay = document.getElementById('reveal-overlay');
+            const suspenseContainer = document.getElementById('suspense-container');
+            const beatingHeart = document.getElementById('beating-heart');
+            const readyText = document.getElementById('ready-text');
+            const revealContent = document.getElementById('reveal-content');
+            const revealText = document.getElementById('reveal-text');
+            const winnersContainer = document.getElementById('winners-container');
+            
+            // Show the frosted glass overlay
+            overlay.classList.remove('hidden');
+            overlay.classList.add('flex');
+            
+            // Fade in overlay
+            setTimeout(() => {
+                overlay.classList.remove('opacity-0');
+                overlay.classList.add('opacity-100');
+                
+                // PHASE 1: The Suspense (Slow Heartbeat)
+                suspenseContainer.classList.remove('hidden');
+                setTimeout(() => { suspenseContainer.classList.remove('opacity-0'); }, 50);
+                
+                beatingHeart.style.animation = 'heart-beat-slow 1s ease-in-out infinite';
+                
+                // PHASE 2: Fast Heartbeat & Countdown
+                setTimeout(() => {
+                    readyText.textContent = "3... 2... 1...";
+                    readyText.classList.add('text-slate-800', 'scale-110');
+                    beatingHeart.style.animation = 'heart-beat-fast 0.3s ease-in-out infinite';
+                }, 3000);
+                
+                // PHASE 3: The Grand Reveal
+                setTimeout(() => {
+                    // Hide Suspense
+                    suspenseContainer.classList.add('hidden');
+                    
+                    if (gender === 'BOY') {
+                        revealText.innerHTML = "It's a BOY!<br><span class='inline-block mt-1 text-6xl sm:text-7xl md:text-[7rem] filter drop-shadow-[0_0_40px_rgba(79,172,254,0.9)]'>💙</span>";
+                        revealText.className = "text-5xl sm:text-7xl md:text-9xl script-font boy-gradient-text pb-2 drop-shadow-2xl animate-pop-bounce text-center";
+                        overlay.style.backgroundColor = "rgba(240, 248, 255, 0.95)"; // Flash light blue background
+                    } else {
+                        revealText.innerHTML = "It's a GIRL!<br><span class='inline-block mt-1 text-6xl sm:text-7xl md:text-[7rem] filter drop-shadow-[0_0_40px_rgba(255,8,68,0.9)]'>💖</span>";
+                        revealText.className = "text-5xl sm:text-7xl md:text-9xl script-font girl-gradient-text pb-2 drop-shadow-2xl animate-pop-bounce text-center";
+                        overlay.style.backgroundColor = "rgba(255, 240, 245, 0.95)"; // Flash light pink background
+                    }
+                    
+                    // Show Winners List
+                    const winningVoters = gender === 'BOY' ? globalBoyVoters : globalGirlVoters;
+                    
+                    let pillsHTML = "";
+                    if (winningVoters.length > 0) {
+                        pillsHTML = winningVoters.map(voterName => `<span class="inline-block px-4 py-2 m-1.5 rounded-full bg-white/80 backdrop-blur-md shadow-sm border border-slate-200 font-bold text-slate-700 text-sm md:text-base">${voterName.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</span>`).join('');
+                    } else {
+                        pillsHTML = `<span class="inline-block px-4 py-2 m-1.5 rounded-full bg-white/80 backdrop-blur-md shadow-sm border border-slate-200 font-bold text-slate-500 text-sm md:text-base italic">No one has guessed it right yet!</span>`;
+                    }
+                    
+                    winnersContainer.innerHTML = `
+                        <p class="text-sm md:text-base font-black uppercase tracking-widest mb-3 text-center drop-shadow-sm ${gender === 'BOY' ? 'text-blue-600' : 'text-pink-600'}">Shoutout to Team ${gender === 'BOY' ? 'Boy' : 'Girl'} who guessed it right!</p>
+                        <div class="max-h-[30vh] overflow-y-auto overflow-x-hidden custom-scrollbar pb-4 flex flex-wrap justify-center">
+                            ${pillsHTML}
+                        </div>
+                    `;
+                    
+                    winnersContainer.classList.remove('hidden');
+                    // Delay the fade-in of names so they appear 1 second after the massive text explodes onto screen
+                    setTimeout(() => {
+                        winnersContainer.classList.remove('opacity-0');
+                        winnersContainer.classList.add('opacity-100');
+                    }, 1000);
+
+                    // Show and pop-in the final text
+                    revealContent.classList.remove('hidden');
+                    setTimeout(() => {
+                        revealContent.classList.remove('scale-50', 'opacity-0');
+                        revealContent.classList.add('scale-100', 'opacity-100');
+                    }, 50);
+
+                }, 5500); // Trigger the final explosion 5.5 seconds after the countdown starts
+
+            }, 50);
+        }
+    </script>
+</body>
+</html>
