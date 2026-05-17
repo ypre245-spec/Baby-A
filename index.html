@@ -366,7 +366,20 @@
         </div>
     </div>
 
-    <header class="w-full relative pt-16 pb-8 px-4 text-center z-10 fade-in-up">
+    <header class="w-full relative pt-12 pb-8 px-4 text-center z-10 fade-in-up">
+        
+        <!-- Glowing Picture Frame -->
+        <div class="relative w-36 h-36 md:w-44 md:h-44 mx-auto mb-6 tilt-card group cursor-pointer">
+            <!-- Ambient Glow -->
+            <div class="absolute inset-0 bg-gradient-to-tr from-blue-400 to-pink-400 rounded-full blur-xl opacity-40 group-hover:opacity-70 transition-opacity duration-500 animate-pulse"></div>
+            <!-- Glass Border & Image -->
+            <div class="relative w-full h-full p-1.5 rounded-full bg-white/60 backdrop-blur-md shadow-2xl border border-white/90">
+                <img src="Baby A.jpg" 
+                     alt="Baby A" 
+                     class="w-full h-full object-cover rounded-full shadow-inner">
+            </div>
+        </div>
+
         <div class="inline-block mb-2 px-5 py-2 rounded-full glass-pill shadow-sm">
             <span class="text-[11px] uppercase tracking-[0.25em] text-slate-600 font-bold">You're Invited</span>
         </div>
